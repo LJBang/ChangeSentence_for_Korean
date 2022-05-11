@@ -1,0 +1,5 @@
+host = 'localhost'
+dbname = 'brunches' 
+user = 'postgres'
+password = '0070'
+port = '5432'
