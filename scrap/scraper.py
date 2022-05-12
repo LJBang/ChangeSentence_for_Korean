@@ -17,7 +17,7 @@ options.add_experimental_option("excludeSwitches", ["enable-logging"]) # usb에�
 options.add_argument('incognito') # 시크릿 모드
 options.add_argument('--start-maximized') #브라우저가 최대화된 상태로 실행
 options.add_argument('--start-fullscreen') #브라우저가 풀스크린 모드(F11)로 실행
-driver = webdriver.Chrome("./chromedriver", options=options)
+driver = webdriver.Chrome("./chromedriver.exe", options=options)
 
 WAIT_TIME = 2
 driver.implicitly_wait(WAIT_TIME)
@@ -64,7 +64,7 @@ while cnt < 1000:
         try:
             like_cnt = driver.find_element(By.XPATH,
             "/html/body/div[1]/div[2]/div[3]/div/div[2]/a[1]/span[2]")
-            magazine = False
+            not_magazine = False
         except:
             like_cnt = driver.find_element(By.XPATH,
             "/html/body/div[1]/div[2]/div[2]/div/div[2]/a[1]/span[2]")
@@ -79,12 +79,12 @@ while cnt < 1000:
         
         content_text = ""
         try:
-            div_p_elems = driver.find_elements(By.XPATH,
+            div_p_elems = driver.find_elements_by_xpath(
                 "/html/body/div[3]/div[1]/div[2]/div[1]/p[@class='wrap_item item_type_text'] | /html/body/div[3]/div[1]/div[2]/div[1]/h4[@class='wrap_item item_type_text']")
             for item in div_p_elems:
                 content_text += item.text
-                print(item.text)
             content_text = content_text.replace('\n', " ")
+        
         except:
             driver.close()
             driver.switch_to.window(driver.window_handles[0])
