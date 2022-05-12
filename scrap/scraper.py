@@ -17,18 +17,18 @@ options.add_experimental_option("excludeSwitches", ["enable-logging"]) # usb에�
 options.add_argument('incognito') # 시크릿 모드
 options.add_argument('--start-maximized') #브라우저가 최대화된 상태로 실행
 options.add_argument('--start-fullscreen') #브라우저가 풀스크린 모드(F11)로 실행
-driver = webdriver.Chrome("chromedriver.exe", options=options)
+driver = webdriver.Chrome("./chromedriver", options=options)
 
 WAIT_TIME = 2
 driver.implicitly_wait(WAIT_TIME)
 
 driver.get("https://brunch.co.kr/")
 
-search_box = driver.find_element(by=By.XPATH,
-            value='//*[@id="btnServiceMenuSearch"]')
+search_box = driver.find_element(By.XPATH,
+            '//*[@id="btnServiceMenuSearch"]')
 search_box.click()
-search_bar = driver.find_element(by=By.XPATH,
-            value='//*[@id="txt_search"]')
+search_bar = driver.find_element(By.XPATH,
+            '//*[@id="txt_search"]')
 search_bar.send_keys(keyword)
 search_bar.send_keys(Keys.RETURN)
 
@@ -50,11 +50,11 @@ while cnt < 1000:
     print("brunch-{} ~ {}".format(start_content, start_content+19))
     for content in range(start_content, start_content+19):
         try:
-            acting_point = driver.find_element(by=By.XPATH,
-                value="//*[@id='resultArticle']/div/div[1]/div[2]/ul/li["+str(content)+"]/a/div[1]/strong")
+            acting_point = driver.find_element(By.XPATH,
+                "//*[@id='resultArticle']/div/div[1]/div[2]/ul/li["+str(content)+"]/a/div[1]/strong")
             driver.execute_script("arguments[0].click();", acting_point)
         except:
-            pass
+            continue
         driver.switch_to.window(driver.window_handles[1])
         driver.get_window_position(driver.window_handles[1])
         driver.implicitly_wait(WAIT_TIME)
@@ -62,12 +62,12 @@ while cnt < 1000:
         not_magazine = True
         # 좋아요 수를 기준으로 거르기
         try:
-            like_cnt = driver.find_element(by=By.XPATH,
-            value="/html/body/div[1]/div[2]/div[3]/div/div[2]/a[1]/span[2]")
+            like_cnt = driver.find_element(By.XPATH,
+            "/html/body/div[1]/div[2]/div[3]/div/div[2]/a[1]/span[2]")
             magazine = False
         except:
-            like_cnt = driver.find_element(by=By.XPATH,
-            value="/html/body/div[1]/div[2]/div[2]/div/div[2]/a[1]/span[2]")
+            like_cnt = driver.find_element(By.XPATH,
+            "/html/body/div[1]/div[2]/div[2]/div/div[2]/a[1]/span[2]")
         
         like_cnt = int(like_cnt.text) if like_cnt.text else 0
         if like_cnt < 15 or not_magazine:
@@ -79,14 +79,18 @@ while cnt < 1000:
         
         content_text = ""
         try:
-            div_p_elems = driver.find_elements(by=By.XPATH,
-                value="/html/body/div[3]/div[1]/div[2]/div[1]/p[@class='wrap_item item_type_text'] | /html/body/div[3]/div[1]/div[2]/div[1]/h4[@class='wrap_item item_type_text']")
+            div_p_elems = driver.find_elements(By.XPATH,
+                "/html/body/div[3]/div[1]/div[2]/div[1]/p[@class='wrap_item item_type_text'] | /html/body/div[3]/div[1]/div[2]/div[1]/h4[@class='wrap_item item_type_text']")
             for item in div_p_elems:
                 content_text += item.text
+                print(item.text)
             content_text = content_text.replace('\n', " ")
         except:
-            pass
-
+            driver.close()
+            driver.switch_to.window(driver.window_handles[0])
+            driver.get_window_position(driver.window_handles[0])
+            continue
+        
         time.sleep(WAIT_TIME)
 
         contents.append({
@@ -99,15 +103,19 @@ while cnt < 1000:
     
     start_content += 19
     if cnt % 10 == 0:
-        f = open("hobby.csv", "a", encoding="UTF-8", newline="")
+        print("SAVE!")
         db = saveposts.CRUD()
 
+        f = open("posts.csv", "a", encoding="UTF-8", newline="")
         csvWriter = csv.writer(f)
         for con in contents:
+            print(con["keyword"], con["content"])
             csvWriter.writerow([con["keyword"], con["content"]])
-            db.insertDB(table="raw_post", column="keyword, content", data = f"""'{con["keyword"]}', '{con["content"]}'""")
-        db.commit()
+            db.insertDB(table="raw_post", column="keyword, content", 
+                    data = f"""'{con["keyword"]}', '{con["content"]}'""")
+        db.insertCommit()
         
         del db
         f.close()
         contents = []
+print("SCRAP FINISH!!")

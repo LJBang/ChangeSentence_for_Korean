@@ -1,0 +1,22 @@
+scraper.py:20: DeprecationWarning: executable_path has been deprecated, please pass in a Service object
+  driver = webdriver.Chrome("./chromedriver", options=options)
+/usr/local/lib/python3.8/dist-packages/selenium/webdriver/remote/webdriver.py:1436: UserWarning: Only 'current' window is supported for W3C compatible browsers.
+  warnings.warn("Only 'current' window is supported for W3C compatible browsers.")
+brunch-1 ~ 20
+brunch-20 ~ 39
+brunch-39 ~ 58
+brunch-58 ~ 77
+brunch-77 ~ 96
+brunch-96 ~ 115
+brunch-115 ~ 134
+brunch-134 ~ 153
+brunch-153 ~ 172
+brunch-172 ~ 191
+/usr/lib/python3/dist-packages/requests/__init__.py:89: RequestsDependencyWarning: urllib3 (1.26.9) or chardet (3.0.4) doesn't match a supported version!
+  warnings.warn("urllib3 ({}) or chardet ({}) doesn't match a supported "
+Traceback (most recent call last):
+  File "scraper.py", line 109, in <module>
+    db.commit()
+  File "/home/ubuntu/proj/ChangeSentence_for_Korean/scrap/saveposts.py", line 23, in commit
+    self. cursor.commit()
+AttributeError: 'psycopg2.extensions.cursor' object has no attribute 'commit'
